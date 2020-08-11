@@ -1,5 +1,3 @@
-from Organisms import Organism
-
 class World:
     def __init__(self, size):
         assert isinstance(size, int)
@@ -18,13 +16,15 @@ class World:
                 self.grid.append(Biome(biomeNames[c]))
 
     def AddPopulation(self, newOrganism):
-        if isinstance(newOrganism, Organism):
-            self.population.append(newOrganism)
-        elif isinstance(newOrganism, list):
+        lastLength = len(self.population)
+        if isinstance(newOrganism, list):
             for p in newOrganism:
                 self.population.append(p)
         else:
-            print('AddPopulation error')
+            self.population.append(newOrganism)
+
+        for i in range(lastLength, len(self.population)):
+            self.population[i].SetWorldDimensions(self.size)
 
     def GetBiomeFrom2DCoord(self, coords):
         return self.grid[coords[0] + coords[1] * self.size[0]]
