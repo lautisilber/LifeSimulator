@@ -42,7 +42,6 @@ class Simulation:
         pygame.display.set_caption('Phyber_2D Engine - {:.2f} fps'.format(self.clock.get_fps()))
 
     def loop(self):
-        print('begin')
         while self.running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

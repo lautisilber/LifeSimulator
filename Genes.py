@@ -21,11 +21,11 @@ class Genes:
         # can produce from 0 to 10 energy each time
         # energy production rate: 0 - 10
         fotGene = DecodeGene(organism.dna, 1)
-        if FotGene == '_':
+        if fotGene == '_':
             return
         lightAvailability = organism.currentBiomie.light
         humAvailability = organism.currentBiomie.humidity
-        energyProductionRate = HexToDec(FotGene)
+        energyProductionRate = HexToDec(fotGene)
         produced = energyProductionRate * min(lightAvailability, humAvailability)
         organism.energy += mapVal(produced, 0, 1000, 0, 10)
 
@@ -39,10 +39,10 @@ class Genes:
         totDebris = organism.currentBiomie.organicDebris
         rate = HexToDec(debGene)
         if rate <= totDebris:
-            biome.organicDebris = totDebris - rate
+            organism.currentBiomie.organicDebris = totDebris - rate
             organism.energy += rate # energy
         else:
-            biome.organicDebris = 0
+            organism.currentBiomie.organicDebris = 0
             organism.energy += totDebris # energy
 
     #3
@@ -66,10 +66,10 @@ class Genes:
         # transforms a percentage of prots from the total to energy and removes that ammount of prots
         # 4 energy is produced by 1 prot
         proGene = DecodeGene(organism.dna, 4)
-        if carGene == '_':
+        if proGene == '_':
             return
         conversionRate = 6
-        protsEmployed = Organism.protein * (HexToDec(proGene) / 100)
+        protsEmployed = organism.protein * (HexToDec(proGene) / 100)
         organism.energy += protsEmployed * conversionRate
         organism.protein -= protsEmployed
 
@@ -91,14 +91,15 @@ class Genes:
             organism.health += organism.energy
             organism.energy = 0
 
-# EXTERNAL ACTIONS
-    #6
+# SENSING ACTIONS
+    #6 and 7
     @staticmethod
-    def Move(direction, steps, energyMin, totEnergy):
-        moveCost = 10
-
-
-    
+    def Vision(organism):
+        virGene = DecodeGene(organism.dna, 6)
+        viaGene = DecodeGene(organism.dna, 7)
+        if virGene == '_' or viaGene == '_':
+            return
+        
 
 # maps value with range of iMin - iMax to a range of oMin - oMax
 def mapVal(val, iMin, iMax, oMin, oMax):
@@ -116,10 +117,13 @@ def HexToDec(hexCode):
 def DecodeGene(dna, geneNr):
     key = str(geneNr) + ':'
     if key in dna:
-        s = dna[string.find(key) + len(key):]
+        s = dna[dna.find(key) + len(key):]
         if '-' in s:
             return s[:s.find('-')]
         else:
             return s
     else:
         return '_'
+
+def GetVisibleCoords(origin, radius, direction, angle):
+    pass

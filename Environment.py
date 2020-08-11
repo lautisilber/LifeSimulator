@@ -1,11 +1,14 @@
+from Organisms import Organism
+
 class World:
     def __init__(self, size):
         assert isinstance(size, int)
         self.size = (size, size)
         self.grid = list()
-        self.PopulateWorld()
+        self.CreateWorld()
+        self.population = list()
 
-    def PopulateWorld(self):
+    def CreateWorld(self):
         from RobertoBiomeGenerator import Roberto
         import random
         biomeNames = ['empty', 'grassland', 'forest', 'jungle', 'savanna', 'desert', 'wetland', 'tundra', 'artic', 'reef', 'marine', 'ocean']
@@ -13,6 +16,15 @@ class World:
         for r in distribution:
             for c in r:
                 self.grid.append(Biome(biomeNames[c]))
+
+    def AddPopulation(self, newOrganism):
+        if isinstance(newOrganism, Organism):
+            self.population.append(newOrganism)
+        elif isinstance(newOrganism, list):
+            for p in newOrganism:
+                self.population.append(p)
+        else:
+            print('AddPopulation error')
 
     def GetBiomeFrom2DCoord(self, coords):
         return self.grid[coords[0] + coords[1] * self.size[0]]

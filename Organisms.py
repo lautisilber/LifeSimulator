@@ -10,7 +10,6 @@ class Organism:
         self.protein = 10
         self.carbohidrates = 10
         self.energy = 10
-        self.genes = genes
         self.currentBiome = Environment.Biome('empty')
 
     def SetCurrBiome(self):
