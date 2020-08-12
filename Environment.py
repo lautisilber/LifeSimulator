@@ -1,28 +1,29 @@
 class World:
     def __init__(self, size):
-        assert isinstance(size, int)
-        self.size = (size, size)
+        assert len(size) == 2
+        self.size = size
         self.grid = list()
         self.CreateWorld()
         self.population = list()
 
-    def CreateWorld(self):
+    def CreateWorld(self, circle=True):
         from RobertoBiomeGenerator import Roberto
         import random
         biomeNames = ['empty', 'grassland', 'forest', 'jungle', 'savanna', 'desert', 'wetland', 'tundra', 'artic', 'reef', 'marine', 'ocean']
-        distribution = Roberto.BiomeGenerator(self.size, len(biomeNames) - 1, 2, 6)
+        distribution = list()
+        if circle:
+            distribution = Roberto.BiomeGeneratorCircle(self.size, len(biomeNames) - 1, 2, 6)
+        else:
+            distribution = Roberto.BiomeGeneratorDiamond(self.size, len(biomeNames) - 1, 2, 6)
         for r in distribution:
             for c in r:
                 self.grid.append(Biome(biomeNames[c]))
 
     def AddPopulation(self, newOrganism):
+        assert isinstance(newOrganism, list)
         lastLength = len(self.population)
-        if isinstance(newOrganism, list):
-            for p in newOrganism:
+        for p in newOrganism:
                 self.population.append(p)
-        else:
-            self.population.append(newOrganism)
-
         for i in range(lastLength, len(self.population)):
             self.population[i].SetWorldDimensions(self.size)
 

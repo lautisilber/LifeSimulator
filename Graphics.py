@@ -56,9 +56,9 @@ class Simulation:
         pygame.quit()
 
 def main():
-    world = Environment.World(24)
+    world = Environment.World((150, 100))
 
-    sim = Simulation((600, 600), 15, 1, world)
+    sim = Simulation((900, 600), 15, 1, world)
     sim.loop()
 
 if __name__ == "__main__":

@@ -2,22 +2,12 @@ import Environment
 from Genes import Genes
 
 # Vision things ID system 2 hex digit long (for now)
-#   
+#   00 - 0A --> Biomes in order ['empty', 'grassland', 'forest', 'jungle', 'savanna', 
+#                               'desert', 'wetland', 'tundra', 'artic', 'reef', 'marine', 'ocean']
 #
+#   0B - 0E --> organisms of type ['plant', 'hervibore', 'carnivore', 'decomposer']
 #
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
+#   for now anything else represents no target
 
 class Organism:
     def __init__(self, dna, pos):
@@ -42,3 +32,6 @@ class Organism:
 
     def Metabolism(self):
         pass
+
+    def See(self):
+        
