@@ -47,41 +47,6 @@ def midPointCircleDraw(origin, radius):
 
     return points
 
-def midPointCircleFill(origin, radius):
-    x = radius 
-    y = 0
-    # Printing the initial point the  
-    # axes after translation  
-    points = [(x + origin[0], y + origin[1])]
-    # When radius is zero only a single  
-    # point be printed  
-    if (radius > 0) : 
-        points.append((origin[0], origin[1]))
-    # Initialising the value of P  
-    P = 1 - radius  
-    while x > y: 
-        y += 1
-        # Mid-point inside or on the perimeter 
-        if P <= 0:  
-            P = P + 2 * y + 1
-        # Mid-point outside the perimeter  
-        else:          
-            x -= 1
-            P = P + 2 * y - 2 * x + 1
-        # All the perimeter points have  
-        # already been printed  
-        if (x < y): 
-            break
-        # Printing the generated point its reflection  
-        # in the other octants after translation  
-        points.append((x + origin[0], y + origin[1]))
-        # If the generated point on the line x = y then  
-        # the perimeter points have already been printed  
-        if x != y:
-            points.append((y + origin[0], x + origin[1]))
-
-    return points
-
 def midPoint(X1,Y1,X2,Y2):  
     # calculate dx & dy 
     line = list()

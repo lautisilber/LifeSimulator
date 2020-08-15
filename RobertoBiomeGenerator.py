@@ -27,7 +27,7 @@ class Roberto:
             origin = (random.randint(0, inverseShape[0] - 1), random.randint(0, inverseShape[1] - 1))
             chosenBiome = random.randint(1, biomeCount)
             radius = random.randint(minRadius, maxRadius)
-            coords = Roberto.GetCircleAroundOrigin(origin, radius)
+            coords = Roberto.FillCircle(origin, radius, shape)
             for c in coords:
                 if c[0] < inverseShape[0] and c[0] >= 0 and c[1] < inverseShape[1] and c[1] >= 0:
                     world[c[0]][c[1]] = chosenBiome
@@ -81,63 +81,16 @@ class Roberto:
         return coords
 
     @staticmethod
-    def GetCircleAroundOrigin(origin, radius):
-        # adapted from https://www.geeksforgeeks.org/mid-point-circle-drawing-algorithm/
-        # kudos to geeksforgeeks.org
-        x = radius 
-        y = 0
-        # Printing the initial point the  
-        # axes after translation  
-        points = [(x + origin[0], y + origin[1])]
-        # When radius is zero only a single  
-        # point be printed  
-        if (radius > 0) : 
-            points.append((origin[0], origin[1]))
-            points.append((-x + origin[0], -y + origin[1]))
-            points.append((y + origin[0], x + origin[1]))
-            points.append((-y + origin[0], -x + origin[1]))
-            #raster mid line
-            for i in range(1, radius):
-                print('epa')
-                points.append((i + origin[0], origin[1]))
-                points.append((-i + origin[0], origin[1]))
-        # Initialising the value of P  
-        P = 1 - radius  
-        while x > y: 
-            y += 1
-            # Mid-point inside or on the perimeter 
-            if P <= 0:  
-                P = P + 2 * y + 1
-            # Mid-point outside the perimeter  
-            else:          
-                x -= 1
-                P = P + 2 * y - 2 * x + 1
-            # All the perimeter points have  
-            # already been printed  
-            if (x < y): 
-                break
-            # Printing the generated point its reflection  
-            # in the other octants after translation  
-            points.append((x + origin[0], y + origin[1]))
-            points.append((-x + origin[0], y + origin[1]))
-            points.append((x + origin[0], -y + origin[1]))  
-            points.append((-x + origin[0], -y +origin[1]))
-            # raster 
-            points.append((origin[0], y + origin[1]))
-            points.append((origin[0], -y + origin[1]))
-            for i in range(1, x):
-                print('apa')
-                points.append((i + origin[0], y + origin[1]))
-                points.append((-i + origin[0], y + origin[1]))
-                points.append((i + origin[0], -y + origin[1]))
-                points.append((-i + origin[0], -y + origin[1]))
-            # If the generated point on the line x = y then  
-            # the perimeter points have already been printed  
-            if x != y: 
-                points.append((y + origin[0], x + origin[1]))
-                points.append((-y + origin[0], x + origin[1]))
-                points.append((y + origin[0], -x + origin[1]))  
-                points.append((-y + origin[0], -x + origin[1]))
+    def FillCircle(origin, radius, shape):    
+        a, b = radius - 1, radius - 1
+        r = radius
+        epsilon_ = 2.2
+        points = list()
+
+        for y in range(shape[1]):
+            for x in range(shape[0]):
+                if (x-a)**2 + (y-b)**2 <= (r**2 - epsilon_**2):
+                    points.append((y - a + origin[0], x - b + origin[1]))
         return points
 
 if __name__ == "__main__":

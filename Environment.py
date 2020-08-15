@@ -14,7 +14,7 @@ class World:
         if circle:
             distribution = Roberto.BiomeGeneratorCircle(self.size, len(biomeNames) - 1, 2, 6)
         else:
-            distribution = Roberto.BiomeGeneratorDiamond(self.size, len(biomeNames) - 1, 2, 6)
+            distribution = Roberto.BiomeGeneratorDiamond(self.size, len(biomeNames) - 1, 3, 20)
         for r in distribution:
             for c in r:
                 self.grid.append(Biome(biomeNames[c]))
