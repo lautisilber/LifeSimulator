@@ -25,20 +25,22 @@ class Genes:
     @staticmethod
     def GetFeedingType(organism):
         # it's 8 hex digits whose average indicate the organism's food chain place
+        # 0 is Plant, 1 is Hervibore, 2 is Carnivore, 3 is Decomposer        
         aliGene = DecodeGene(organism.dna, 2)
-        return GetAvgFromHex(aliGene)
+        val = GetAvgFromHex(aliGene)
+        return round(mapVal(val, 0, 15, 0, 4))
 
     #3
     @staticmethod
     def MakeFotosynthesis(organism):
         # can produce from 0 to 10 energy each time
-        # energy production rate: 0 - 10 (0 - 5 means 0 production, 0 - 9 is rate, A - F is 0)
+        # energy production rate: 0 - 10 (0 - 9 is rate, A - F is 0)
         fotGene = DecodeGene(organism.dna, 3)
         if fotGene == '_':
             return
         lightAvailability = organism.currentBiomie.light
         humAvailability = organism.currentBiomie.humidity
-        energyProductionRate = HexToDec(fotGene)
+        energyProductionRate = GetAvgFromHex(fotGene)
         if energyProductionRate > 9:
             energyProductionRate = 0
         produced = energyProductionRate * min(lightAvailability, humAvailability)
@@ -54,7 +56,7 @@ class Genes:
         if debGene == '_':
             return
         totDebris = organism.currentBiomie.organicDebris
-        digestRate = HexToDec(debGene)
+        digestRate = GetAvgFromHex(debGene)
         if digestRate > 9:
             digestRate = 0
         digestRate = math.floor(digestRate / 2)
@@ -75,7 +77,7 @@ class Genes:
         if carGene == '_':
             return
         conversionRate = 2
-        carbosEmployed = organism.carbohidrates * (HexToDec(carGene) / 100)
+        carbosEmployed = organism.carbohidrates * (GetAvgFromHex(carGene) / 100)
         organism.energy += carbosEmployed * conversionRate
         organism.carbohidrates -= carbosEmployed
 
@@ -89,7 +91,7 @@ class Genes:
         if proGene == '_':
             return
         conversionRate = 6
-        protsEmployed = organism.protein * (HexToDec(proGene) / 100)
+        protsEmployed = organism.protein * (GetAvgFromHex(proGene) / 100)
         organism.energy += protsEmployed * conversionRate
         organism.protein -= protsEmployed
 
@@ -101,7 +103,7 @@ class Genes:
         heaGene = DecodeGene(organism.dna, 7)
         if heaGene == '_':
             return
-        healRate = HexToDec(heaGene)
+        healRate = GetAvgFromHex(heaGene)
         if organism.energy >= healRate:
             organism.health += healRate
             organism.energy -= healRate
@@ -160,12 +162,17 @@ class Genes:
                 follow = GetBoolFromHex(target[4:])
                 targets.append([hex1 + hex2, follow])
 
+        @staticmethod
+        def Eat(organism, otherHealth):
+            pass
+
 
 # maps value with range of iMin - iMax to a range of oMin - oMax
 def mapVal(val, iMin, iMax, oMin, oMax):
     return oMin + ((float(val - iMin) / float(iMax - iMin)) * (oMax - oMin))
 
 def HexToRGB(hexCode):
+    print(hexCode)
     assert isinstance(hexCode, str)
     hexCode = hexCode.lstrip('#')
     return tuple(int(hexCode[i:i+2], 16) for i in (0, 2, 4))
@@ -183,7 +190,7 @@ def DecodeGene(dna, geneNr):
         else:
             return s
     else:
-        return '_'
+        return '#'
 
 def GetVisibleCoords(origin, visionType, direction):
     # VisionType

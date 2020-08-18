@@ -1,38 +1,100 @@
+import numpy as np
+from Organisms import Organism
+
 class World:
+
+    biomeNames = ['empty', 'grassland', 'forest', 'jungle', 'savanna', 'desert', 'wetland', 'tundra', 'artic', 'reef', 'marine', 'ocean']
+    
     def __init__(self, size):
         assert len(size) == 2
         self.size = size
-        self.grid = list()
-        self.CreateWorld()
+        self.biomeMap = np.zeros(size, dtype=int)
+        self.biomes = list()        
+        self.populationMap = list()
         self.population = list()
+        self.visionMap = list()
+
+        self.CreateWorld()
 
     def CreateWorld(self, circle=True):
         from RobertoBiomeGenerator import Roberto
         import random
-        biomeNames = ['empty', 'grassland', 'forest', 'jungle', 'savanna', 'desert', 'wetland', 'tundra', 'artic', 'reef', 'marine', 'ocean']
+        
         distribution = list()
         if circle:
-            distribution = Roberto.BiomeGeneratorCircle(self.size, len(biomeNames) - 1, 2, 6)
+            distribution = Roberto.BiomeGeneratorCircle(self.size, len(World.biomeNames) - 1, 2, 6)
         else:
-            distribution = Roberto.BiomeGeneratorDiamond(self.size, len(biomeNames) - 1, 3, 20)
+            distribution = Roberto.BiomeGeneratorDiamond(self.size, len(World.biomeNames) - 1, 3, 20)
+        i = 0
+        a = 0
+        b = 0
         for r in distribution:
             for c in r:
-                self.grid.append(Biome(biomeNames[c]))
+                self.biomes.append(Biome(c))
+                self.biomeMap[a][b] = i
+                i += 1
+                b += 1
+            a += 1
+            b = 0
+        for r in range(self.size[0]):
+            self.populationMap.append([])
+            self.visionMap.append([])
+            for c in range(self.size[1]):
+                self.populationMap[r].append([])
+                self.visionMap[r].append('')
 
-    def AddPopulation(self, newOrganism):
-        assert isinstance(newOrganism, list)
-        lastLength = len(self.population)
-        for p in newOrganism:
-                self.population.append(p)
-        for i in range(lastLength, len(self.population)):
-            self.population[i].SetWorldDimensions(self.size)
+    def AddPopulation(self, dnaInit='random', randPos=True, pos=(0, 0)):
+        position = pos
+        if randPos:
+            from random import randint
+            position = (randint(0, self.biomeMap.shape[0] - 1), randint(0, self.biomeMap.shape[1] - 1))            
+        self.population.append(Organism(position, Organism.GetDNA(dnaInit)))
 
-    def GetBiomeFrom2DCoord(self, coords):
-        return self.grid[coords[0] + coords[1] * self.size[0]]
+    def WritePopulationMap(self):
+        for r in range(self.size[0]):
+            for c in range(self.size[1]):
+                self.populationMap[r][c] = []
+        for i in range(len(self.population)):
+            pos = self.population[i].position
+            self.populationMap[pos[0]][pos[1]].append(i)
+
+    def WriteVisionMap(self):
+        self.WritePopulationMap()
+        for r in range(self.size[0]):
+            for c in range(self.size[1]):
+                self.visionMap[r][c] = ''
+        for r in range(self.size[0]):
+            for c in range(self.size[1]):                
+                self.visionMap[r][c] += DecTo2DigitHex(self.biomes[self.biomeMap[r][c]].index)
+                for pindex in self.populationMap[r][c]:
+                    self.visionMap[r][c] += DecTo2DigitHex(self.population[pindex].foodChainPlace + 12)
+
+    def UpdatePopulationVision(self):
+        for p in self.population:
+            p.SetVisionData(self.visionMap)
+
+    def Move(self):
+        for p in self.population:
+            if p.moveNext:
+                if p.currDirection == 0 and p.position[0] + 1 < self.size[0]:
+                    p.position = (p.position[0] + 1, p.position[1])
+                elif p.currDirection == 1 and p.position[1] + 1 < self.size[1]:
+                    p.position = (p.position[0], p.position[1] + 1)
+                elif p.currDirection == 2 and p.position[0] - 1 >= 0:
+                    p.position = (p.position[0] - 1, p.position[1])
+                elif p.currDirection == 3 and p.position[1] - 1 >= 0:
+                    p.position = (p.position[0], p.position[1] - 1)
+                p.moveNext = False
+                
+    def Loop(self):
+        self.WriteVisionMap()
+        self.UpdatePopulationVision()
+        self.Move()
 
 class Biome:
-    def __init__(self, name):
-        self.name = name
+    def __init__(self, index):
+        self.index = index
+        self.name = World.biomeNames[self.index]
         self.colour = Biome.GetColourFromName(self.name)
         self.light = Biome.GetLightFromName(self.name)
         self.temperature = Biome.GetTempFromName(self.name)
@@ -113,3 +175,7 @@ class Biome:
             'ocean' : 100
         }
         return tempDict[name]
+
+# helper functions
+def DecTo2DigitHex(dec):
+    return format(dec, '02x').upper()

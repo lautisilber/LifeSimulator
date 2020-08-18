@@ -20,19 +20,17 @@ class Simulation:
         self.gridSize = self.get_world_grid()
 
     def get_world_grid(self):
-        width = self.size[0] / self.world.size[0]
-        height = self.size[1] / self.world.size[1]
+        width = self.size[0] / self.world.size[1]
+        height = self.size[1] / self.world.size[0]
         return (int(width), int(height))
 
     def draw_world(self):
-        row = 0
-        col = 0
-        for grid in self.world.grid:
-            self.draw_rect((col * self.gridSize[0], row * self.gridSize[1]), ((col + 1) * self.gridSize[0], (row + 1) * self.gridSize[1]), grid.colour)
-            col += 1
-            if col >= self.world.size[0]:
-                col = 0
-                row +=1
+        for row in range(self.world.biomeMap.shape[0]):
+            for col in range(self.world.biomeMap.shape[1]):
+                self.draw_rect((col * self.gridSize[0], row * self.gridSize[1]), ((col + 1) * self.gridSize[0], (row + 1) * self.gridSize[1]), self.world.biomes[self.world.biomeMap[row][col]].colour)
+
+    def draw_organisms(self):
+        pass
 
 
     def draw_rect(self, upleft, bottomright, col):
@@ -49,6 +47,7 @@ class Simulation:
             self.window_title()
             self.screen.fill((0, 0, 0))
 
+            self.world.Loop()
             self.draw_world()
 
             self.deltaTime = self.clock.tick(self.fps)
@@ -56,7 +55,8 @@ class Simulation:
         pygame.quit()
 
 def main():
-    world = Environment.World((150, 100))
+    world = Environment.World((40, 60))
+    world.AddPopulation()
 
     sim = Simulation((900, 600), 15, 1, world)
     sim.loop()

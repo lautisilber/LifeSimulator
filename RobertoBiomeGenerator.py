@@ -4,37 +4,35 @@ import random
 class Roberto:
     @staticmethod
     def BiomeGeneratorDiamond(shape, biomeCount, minRadius, maxRadius):
-        inverseShape = (shape[1], shape[0])
-        world = np.zeros(inverseShape, dtype=int)
+        world = np.zeros(shape, dtype=int)
         while True:
-            origin = (random.randint(0, inverseShape[0] - 1), random.randint(0, inverseShape[1] - 1))
+            origin = (random.randint(0, shape[0] - 1), random.randint(0, shape[1] - 1))
             chosenBiome = random.randint(1, biomeCount)
             radius = random.randint(minRadius, maxRadius)
             for r in range(radius):
                 coords = Roberto.GetDiamondAroundOrigin(origin, r)
                 for c in coords:
-                    if c[0] < inverseShape[0] and c[0] >= 0 and c[1] < inverseShape[1] and c[1] >= 0:
-                        world[c[0]][c[1]] = chosenBiome
+                    if c[0] < shape[0] and c[0] >= 0 and c[1] < shape[1] and c[1] >= 0:
+                        world[c[1]][c[0]] = chosenBiome
             if not 0 in world:
                 break
-        return world.tolist()
+        return world
 
     @staticmethod
     def BiomeGeneratorCircle(shape, biomeCount, minRadius, maxRadius):
-        inverseShape = (shape[1], shape[0])
-        world = np.zeros(inverseShape, dtype=int)
+        world = np.zeros(shape, dtype=int)
         while True:
-            origin = (random.randint(0, inverseShape[0] - 1), random.randint(0, inverseShape[1] - 1))
+            origin = (random.randint(0, shape[0] - 1), random.randint(0, shape[1] - 1))
             chosenBiome = random.randint(1, biomeCount)
             radius = random.randint(minRadius, maxRadius)
             coords = Roberto.FillCircle(origin, radius, shape)
             for c in coords:
-                if c[0] < inverseShape[0] and c[0] >= 0 and c[1] < inverseShape[1] and c[1] >= 0:
+                if c[0] < shape[0] and c[0] >= 0 and c[1] < shape[1] and c[1] >= 0:
                     world[c[0]][c[1]] = chosenBiome
             if not 0 in world:
                 break
         print (world)
-        return world.tolist()
+        return world
 
     @staticmethod
     def GetDiamondAroundOrigin(origin, radius):
