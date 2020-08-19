@@ -25,9 +25,7 @@ class World:
             distribution = Roberto.BiomeGeneratorCircle(self.size, len(World.biomeNames) - 1, 2, 6)
         else:
             distribution = Roberto.BiomeGeneratorDiamond(self.size, len(World.biomeNames) - 1, 3, 20)
-        i = 0
-        a = 0
-        b = 0
+        a = b = i = 0
         for r in distribution:
             for c in r:
                 self.biomes.append(Biome(c))
@@ -48,7 +46,8 @@ class World:
         if randPos:
             from random import randint
             position = (randint(0, self.biomeMap.shape[0] - 1), randint(0, self.biomeMap.shape[1] - 1))            
-        self.population.append(Organism(position, Organism.GetDNA(dnaInit)))
+        self.population.append(Organism(position, dnaInit))
+        print(position)
 
     def WritePopulationMap(self):
         for r in range(self.size[0]):
@@ -75,6 +74,8 @@ class World:
 
     def Move(self):
         for p in self.population:
+            p.Move()
+            print(p.moveNext)
             if p.moveNext:
                 if p.currDirection == 0 and p.position[0] + 1 < self.size[0]:
                     p.position = (p.position[0] + 1, p.position[1])
@@ -84,7 +85,8 @@ class World:
                     p.position = (p.position[0] - 1, p.position[1])
                 elif p.currDirection == 3 and p.position[1] - 1 >= 0:
                     p.position = (p.position[0], p.position[1] - 1)
-                p.moveNext = False
+                p.moveNext = False                        
+            print(p.position)
                 
     def Loop(self):
         self.WriteVisionMap()

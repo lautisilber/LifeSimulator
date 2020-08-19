@@ -129,9 +129,9 @@ class Genes:
     def Movement(organism):
         # data is distributed in the following way:
         # 9: average of 4 digits defines move motive
-        #   0000XXXX - 5555XXXX -> doesn't move
-        #   6666XXXX - AAAAXXXX-> moves at random
-        #   BBBBXXXX - FFFFXXXX-> moves if target in vision (X represents the amount of elements of interest (max 10))
+        #   00000000 - 55555555 -> doesn't move
+        #   66666666 - AAAAAAAA-> moves at random
+        #   BBBBBBBB - FFFFFFFF-> moves if target in vision (X represents the amount of elements of interest (max 10))
         # 10: nothing if not moving
         #   if random average of all digits is taken and 0 = 0% and F = 100%
         #   if target in vision:
@@ -147,8 +147,7 @@ class Genes:
             return
         elif motive <= 10:
             organism.currDirection = random.randint(0, 3)
-            percentage = mapVal(GetAvgFromHex(minGene), 0, 15, 0, 1)
-            if random.random() < percentage:
+            if random.random() < mapVal(GetAvgFromHex(minGene), 0, 15, 0, 1):
                 organism.moveNext = True
             else:
                 organism.moveNext = False
@@ -172,7 +171,6 @@ def mapVal(val, iMin, iMax, oMin, oMax):
     return oMin + ((float(val - iMin) / float(iMax - iMin)) * (oMax - oMin))
 
 def HexToRGB(hexCode):
-    print(hexCode)
     assert isinstance(hexCode, str)
     hexCode = hexCode.lstrip('#')
     return tuple(int(hexCode[i:i+2], 16) for i in (0, 2, 4))

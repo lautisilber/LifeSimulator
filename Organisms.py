@@ -14,8 +14,8 @@ class Organism:
     def GetDNA(flag):
         return DNA.GetDNAFromFlag(flag)
     
-    def __init__(self, pos, dna=''):
-        self.dna = dna
+    def __init__(self, pos, dna='random'):
+        self.dna = Organism.GetDNA(dna)
 
         # internal - static
         self.colour = Genes.GetColour(self)
@@ -31,7 +31,7 @@ class Organism:
         # external - dynamic
         self.position = pos
         self.currDirection = 0 # 0-up   1-right    2-down   3-left        
-        self.visibleTiles = self.position
+        self.visibleTiles = [(0, 0)]
         self.dataInVision = []
 
         # flags
@@ -73,7 +73,7 @@ class Organism:
             if vision[0] >= 0 and vision[0] < len(data) and vision[1] >= 0 and vision[1] < len(data[0]):
                 if p == (0, 0):
                     split = SplitEveryNChar(data[vision[0]][vision[1]], 2)
-                    split.remove(DecTo2DigitHex(self.foodChainPlace))
+                    split.remove(DecTo2DigitHex(self.foodChainPlace + 12))
                     string = ''
                     for s in split:
                         string += s

@@ -20,8 +20,12 @@ class DNA:
             assert len(s) == 2
             return DNA.GetDNAStringFromRaw(s[1])
         else:
-            assert sum(DNA.structure) == len(DNA.GetDNARawFromString(flag))
-            return flag
+            if ':' in flag and '-' in flag:
+                assert sum(DNA.structure) == len(DNA.GetDNARawFromString(flag))
+                return flag
+            else:
+                assert sum(DNA.structure) == len(flag)
+                return DNA.GetDNAStringFromRaw(flag)
     
     @staticmethod
     def GetRandomString():
@@ -84,20 +88,21 @@ class DNA:
         s = ''
         for i in range(len(DNA.structure)):
             s += str(i) + ':'
+            carry = sum([i for i in DNA.structure[:i]])
             for n in range(DNA.structure[i]):
-                s += raw[i + n]
+                s += raw[n + carry]
             s += '-'
         return s[:len(s) - 1]
 
     @staticmethod
     def GetDNARawFromString(string):
         s = string[string.find(':') + 1:]
-        print(s)
         while True:
             if '-' in s:
-                print(s[s.find('-'):s.find(':')+1])
                 s = s.replace(s[s.find('-'):s.find(':')+1], '')
             else:
                 break
         assert len(s) == sum(DNA.structure)
         return s        
+
+#print(DNA.GetDNAStringFromRaw('FF00FF000000000000000000000000000000000000000000000000000000000000000077777777FFFFFFFF'))

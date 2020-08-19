@@ -31,7 +31,6 @@ class Roberto:
                     world[c[0]][c[1]] = chosenBiome
             if not 0 in world:
                 break
-        print (world)
         return world
 
     @staticmethod
