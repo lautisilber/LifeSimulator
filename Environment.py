@@ -70,6 +70,7 @@ class World:
 
     def UpdatePopulationVision(self):
         for p in self.population:
+            p.See()
             p.SetVisionData(self.visionMap)
 
     def Move(self):

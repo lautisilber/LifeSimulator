@@ -117,55 +117,60 @@ class Genes:
     #8
     @staticmethod
     def Vision(organism):
-        # is 4 digits long for consistency
+        # is 8 digits long for consistency
         visGene = DecodeGene(organism.dna, 8)
         if visGene == '_':
             return
-        visionType = round(GetAvgFromHex(visGene) / 4)
+        visionType = round(mapVal(GetAvgFromHex(visGene), 0, 15, 0, 3))
         organism.visibleTiles = GetVisibleCoords(organism.position, visionType, organism.currDirection)
 
     #9 and 10
     @staticmethod
-    def Movement(organism):
+    def Movement(organism, forceRandom=False):
         # data is distributed in the following way:
         # 9: average of 4 digits defines move motive
         #   00000000 - 55555555 -> doesn't move
         #   66666666 - AAAAAAAA-> moves at random
         #   BBBBBBBB - FFFFFFFF-> moves if target in vision (X represents the amount of elements of interest (max 10))
-        # 10: nothing if not moving
-        #   if random average of all digits is taken and 0 = 0% and F = 100%
-        #   if target in vision:
+        # 10: random average of all digits is taken and 0 = 0% and F = 100%
+        # 11: if target in vision:
         #       AABBCCCC DDEEFFFF GGHHIIII ...
         #       target id is [avg(AA) avg(BB)]
         #       bool if follow is avg(CCCC)
 
         motGene = DecodeGene(organism.dna, 9)
-        minGene = DecodeGene(organism.dna, 10)
-        motive = GetAvgFromHex(motGene[:4])
-        if motive <= 5:
+        chaGene = DecodeGene(organism.dna, 10)
+        tarGene = DecodeGene(organism.dna, 11)
+        motive = GetAvgFromHex(motGene)
+        if forceRandom:
+            motive = 10
+        if motive <= 5: # no movement
             organism.moveNext = False
+            organism.targetedMove = False
             return
-        elif motive <= 10:
+        elif motive <= 10: # random movement
             organism.currDirection = random.randint(0, 3)
-            if random.random() < mapVal(GetAvgFromHex(minGene), 0, 15, 0, 1):
+            organism.targetedMove = False
+            if random.random() < mapVal(GetAvgFromHex(chaGene), 0, 15, 0, 1):
                 organism.moveNext = True
             else:
                 organism.moveNext = False
-        else:
-            targetNumber = GetAvgFromHex(motGene[4:])
-            targetData = DivideStrAfterChunkSize(minGene[:targetNumber * 8], 8)
+        else: # targeted movement
+            organism.targetedMove = True
+            targetData = DivideStrAfterChunkSize(tarGene, 8)
             targets = list() # [target id in decimal, follow]
             for target in targetData:
-                hex1 = GetAvgFromHex(target[:2])
-                hex2 = GetAvgFromHex(target[2:4])
+                dec1 = GetAvgFromHex(target[:4], 2)
+                hex1 = DecTo2DigitHex(dec1)
                 follow = GetBoolFromHex(target[4:])
-                targets.append([hex1 + hex2, follow])
+                targets.append([hex1, follow])
+            organism.moveTargets = targets
 
         @staticmethod
         def Eat(organism, otherHealth):
             pass
 
-
+# helper functions
 # maps value with range of iMin - iMax to a range of oMin - oMax
 def mapVal(val, iMin, iMax, oMin, oMax):
     return oMin + ((float(val - iMin) / float(iMax - iMin)) * (oMax - oMin))
@@ -255,7 +260,7 @@ def GetVisibleCoords(origin, visionType, direction):
             (0, 2),  (1, 2),
             (0, -2), (1, -2)
         ]
-
+    vision = [(v[1], v[0]) for v in vision] # invert components
     r = 1
     if direction == 2 or direction == 3:
         r = -1
@@ -283,3 +288,6 @@ def GetBoolFromHex(hexCode):
         return False
     else:
         assert False
+
+def DecTo2DigitHex(dec):
+    return format(dec, '02x').upper()

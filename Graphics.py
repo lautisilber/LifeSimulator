@@ -82,12 +82,13 @@ def main():
     dna += '00000000'
     dna += '00000000'
     dna += '00000000'
-    dna += '00000000'
-    dna += '77777777'
-    dna += 'AAAAAAAA'
+    dna += '66666666'
+    dna += 'EEEEEEEE'
+    dna += 'FFFFFFFF'
+    dna += '0505FFFF' + '06060000'
     world.AddPopulation(dna)
 
-    sim = Simulation((900, 600), 10, 1, world)
+    sim = Simulation((900, 600), 100, 1, world)
     sim.loop()
 
 if __name__ == "__main__":

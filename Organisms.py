@@ -1,3 +1,4 @@
+from random import choice
 from Genes import Genes
 from DNA import DNA
 
@@ -31,11 +32,13 @@ class Organism:
         # external - dynamic
         self.position = pos
         self.currDirection = 0 # 0-up   1-right    2-down   3-left        
-        self.visibleTiles = [(0, 0)]
+        self.visibleTiles = [self.position]
         self.dataInVision = []
 
         # flags
         self.moveNext = False
+        self.targetedMove = False
+        self.moveTargets = []
 
     def SetDNA(self, flag):
         self.dna = Organism.GetDNA(flag)
@@ -69,21 +72,66 @@ class Organism:
     def SetVisionData(self, data):
         self.dataInVision = []
         for p in self.visibleTiles:
-            vision = (p[0] + self.position[0], p[1] + self.position[1])
-            if vision[0] >= 0 and vision[0] < len(data) and vision[1] >= 0 and vision[1] < len(data[0]):
-                if p == (0, 0):
-                    split = SplitEveryNChar(data[vision[0]][vision[1]], 2)
+            if p[0] >= 0 and p[0] < len(data) and p[1] >= 0 and p[1] < len(data[0]):
+                if p == self.position:
+                    split = SplitEveryNChar(data[p[0]][p[1]], 2)
                     split.remove(DecTo2DigitHex(self.foodChainPlace + 12))
                     string = ''
                     for s in split:
                         string += s
-                    self.dataInVision.append(string)
+                    self.dataInVision.append([(p[0], p[1]), string])
                 else:
-                    self.dataInVision.append([vision[0]][vision[1]])
+                    self.dataInVision.append([(p[0], p[1]), data[p[0]][p[1]]])
                 
 
     def Move(self):
         Genes.Movement(self)
+        if self.targetedMove:
+            for objective in self.moveTargets:
+                targetID = objective[0]
+                follow = objective[1]
+                isFoundTarget = False    
+                foundTargets = []            
+                for visible in self.dataInVision:
+                    if targetID in visible[1]:
+                        isFoundTarget = True
+                        print('found target')
+                        foundTargets.append(visible[0])
+
+                        target = choice(foundTargets)
+                        # get nearest path to target (visible[0])
+                        dy = target[0] - self.position[0]
+                        dx = target[1] - self.position[0]
+                        # ojo q lo de abajo podria estar al reves
+                        if abs(dy) > abs(dx):
+                            self.moveNext = True
+                            if GetSign(dy) > 0:
+                                if follow:
+                                    self.currDirection = 2
+                                else:
+                                    self.currDirection = 0
+                            else:
+                                if follow:
+                                    self.currDirection = 0
+                                else:
+                                    self.currDirection = 2
+                        elif abs(dy) < abs(dx):
+                            self.moveNext = True
+                            if GetSign(dx) > 0:
+                                if follow:
+                                    self.currDirection = 1
+                                else:
+                                    self.currDirection = 3
+                            else:
+                                if follow:
+                                    self.currDirection = 3
+                                else:
+                                    self.currDirection = 1
+                        else:
+                            self.moveNext = False
+                        break
+            if not isFoundTarget:
+                Genes.Movement(self, True)         
         
 # helper functions
 def SplitEveryNChar(string, n):
@@ -91,4 +139,11 @@ def SplitEveryNChar(string, n):
 
 def DecTo2DigitHex(dec):
     return format(dec, '02x').upper()
-        
+
+def GetSign(n):
+    if n > 0:
+        return 1
+    elif n < 0:
+        return -1
+    else:
+        return 0

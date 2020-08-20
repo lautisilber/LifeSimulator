@@ -2,9 +2,9 @@ import random
 
 class DNA:
     # colour, acutism, feeding type, fotosynthesis, organic debris, carbos,
-    # proteins, heal, vision, movement type, movement target
+    # proteins, heal, vision, movement type, random movement chance, 2 targets movement
     
-    structure = [6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8]
+    structure = [6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 16]
     bases = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F']
 
     @staticmethod
