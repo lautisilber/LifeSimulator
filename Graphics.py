@@ -73,7 +73,11 @@ class Simulation:
         pygame.quit()
 
 def main():
+    import numpy as np
+
     world = Environment.World((40, 60))
+    world.CreateWorld()
+
     dna = 'FF00FF'
     dna += '00000000'
     dna += '00000000'
@@ -82,13 +86,13 @@ def main():
     dna += '00000000'
     dna += '00000000'
     dna += '00000000'
-    dna += '66666666'
+    dna += '99999999'
     dna += 'EEEEEEEE'
     dna += 'FFFFFFFF'
-    dna += '0505FFFF' + '06060000'
+    dna += '0404FFFF' + '05050000'
     world.AddPopulation(dna)
 
-    sim = Simulation((900, 600), 100, 1, world)
+    sim = Simulation((900, 600), 60, 1, world)
     sim.loop()
 
 if __name__ == "__main__":

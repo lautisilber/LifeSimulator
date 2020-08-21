@@ -164,13 +164,76 @@ class Genes:
                 hex1 = DecTo2DigitHex(dec1)
                 follow = GetBoolFromHex(target[4:])
                 targets.append([hex1, follow])
-            organism.moveTargets = targets
+            organism.moveTargets = targets # unused
+            targetCoords, follow = GetTarget(targets, organism.dataInVision)
+            if targetCoords:
+                direction = DirectionFinding(organism.position, targetCoords, follow)
+                if direction == -1:
+                    organism.moveNext = False
+                else:
+                    organism.currDirection = direction
+                    organism.moveNext = True
+            else:
+                Genes.Movement(organism, True)
 
+        if not organism.moveNext:
+            organism.currDirection = random.choice([0, 1, 2, 3])
+            
         @staticmethod
         def Eat(organism, otherHealth):
             pass
 
 # helper functions
+def GetTarget(targets, dataInVision):
+    foundTargets = list()
+    for t in targets:
+        foundTargets = []
+        for d in dataInVision:
+            if t[0] in d[1]:
+                print('found target')
+                foundTargets.append([d[0], t[1]])
+        if foundTargets:
+            break
+    if not foundTargets:
+        return None, True
+    target = random.choice(foundTargets)
+    return target[0], target[1]
+
+def DirectionFinding(origin, target, follow=True):
+    dy = target[0] - origin[0]
+    dx = target[1] - origin[1]
+    if abs(dy) > abs(dx):
+        if (dy > 0 and follow) or (dy < 0 and not follow):
+            return 0
+        elif (dy < 0 and follow) or (dy > 0 and not follow):
+            return 2
+        else:
+            print('error direction finding (helper function in genes.py')
+    if abs(dy) < abs(dx):
+        if (dx > 0 and follow) or (dx < 0 and not follow):
+            return 1
+        elif (dx < 0 and follow) or (dx > 0 and not follow):
+            return 3
+        else:
+            print('error direction finding (helper function in genes.py')
+    else:
+        if dy == 0 and dx == 0:
+            return -1
+        if random.random() < 0.5:
+            if (dy > 0 and follow) or (dy < 0 and not follow):
+                return 0
+            elif (dy < 0 and follow) or (dy > 0 and not follow):
+                return 2
+            else:
+                print('error direction finding (helper function in genes.py')                                
+        else:
+            if (dx > 0 and follow) or (dx < 0 and not follow):
+                return 1
+            elif (dx < 0 and follow) or (dx > 0 and not follow):
+                return 3
+            else:
+                print('error direction finding (helper function in genes.py')
+
 # maps value with range of iMin - iMax to a range of oMin - oMax
 def mapVal(val, iMin, iMax, oMin, oMax):
     return oMin + ((float(val - iMin) / float(iMax - iMin)) * (oMax - oMin))

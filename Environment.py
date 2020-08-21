@@ -1,4 +1,5 @@
 import numpy as np
+from random import choice
 from Organisms import Organism
 
 class World:
@@ -14,7 +15,7 @@ class World:
         self.population = list()
         self.visionMap = list()
 
-        self.CreateWorld()
+        #self.CreateWorld()
 
     def CreateWorld(self, circle=True):
         from RobertoBiomeGenerator import Roberto
@@ -39,6 +40,26 @@ class World:
             self.visionMap.append([])
             for c in range(self.size[1]):
                 self.populationMap[r].append([])
+                self.visionMap[r].append('')
+
+    def CreateCustomWorld(self, indices):
+        #assert indices.size == self.size
+
+        a = b = i = 0
+        for r in indices:
+            for c in r:
+                self.biomes.append(Biome(c))
+                self.biomeMap[a][b] = i
+                i += 1
+                b += 1
+            a += 1
+            b = 0
+
+        for r in range(self.size[0]):
+            self.populationMap.append([])
+            self.visionMap.append([])
+            for c in range(self.size[1]):
+                self.populationMap[r].append([])            
                 self.visionMap[r].append('')
 
     def AddPopulation(self, dnaInit='random', randPos=True, pos=(0, 0)):
@@ -86,6 +107,8 @@ class World:
                     p.position = (p.position[0] - 1, p.position[1])
                 elif p.currDirection == 3 and p.position[1] - 1 >= 0:
                     p.position = (p.position[0], p.position[1] - 1)
+                else:
+                    p.currDirection = choice([0, 1, 2, 3])
                 p.moveNext = False                        
             print(p.position)
                 

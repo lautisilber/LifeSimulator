@@ -72,68 +72,21 @@ class Organism:
     def SetVisionData(self, data):
         self.dataInVision = []
         for p in self.visibleTiles:
-            if p[0] >= 0 and p[0] < len(data) and p[1] >= 0 and p[1] < len(data[0]):
+            vision = p # (p[0] + self.position[0], p[1] + self.position[1])
+            if vision[0] >= 0 and vision[0] < len(data) and vision[1] >= 0 and vision[1] < len(data[0]):
                 if p == self.position:
-                    split = SplitEveryNChar(data[p[0]][p[1]], 2)
+                    split = SplitEveryNChar(data[vision[0]][vision[1]], 2)
                     split.remove(DecTo2DigitHex(self.foodChainPlace + 12))
                     string = ''
                     for s in split:
                         string += s
-                    self.dataInVision.append([(p[0], p[1]), string])
+                    self.dataInVision.append([(vision[0], vision[1]), string])
                 else:
-                    self.dataInVision.append([(p[0], p[1]), data[p[0]][p[1]]])
+                    self.dataInVision.append([(vision[0], vision[1]), data[vision[0]][vision[1]]])
                 
-
     def Move(self):
-        Genes.Movement(self)
-        if self.targetedMove:
-            for objective in self.moveTargets:
-                targetID = objective[0]
-                follow = objective[1]
-                isFoundTarget = False    
-                foundTargets = []            
-                for visible in self.dataInVision:
-                    if targetID in visible[1]:
-                        isFoundTarget = True
-                        print('found target')
-                        foundTargets.append(visible[0])
+        Genes.Movement(self)      
 
-                        target = choice(foundTargets)
-                        # get nearest path to target (visible[0])
-                        dy = target[0] - self.position[0]
-                        dx = target[1] - self.position[0]
-                        # ojo q lo de abajo podria estar al reves
-                        if abs(dy) > abs(dx):
-                            self.moveNext = True
-                            if GetSign(dy) > 0:
-                                if follow:
-                                    self.currDirection = 2
-                                else:
-                                    self.currDirection = 0
-                            else:
-                                if follow:
-                                    self.currDirection = 0
-                                else:
-                                    self.currDirection = 2
-                        elif abs(dy) < abs(dx):
-                            self.moveNext = True
-                            if GetSign(dx) > 0:
-                                if follow:
-                                    self.currDirection = 1
-                                else:
-                                    self.currDirection = 3
-                            else:
-                                if follow:
-                                    self.currDirection = 3
-                                else:
-                                    self.currDirection = 1
-                        else:
-                            self.moveNext = False
-                        break
-            if not isFoundTarget:
-                Genes.Movement(self, True)         
-        
-# helper functions
 def SplitEveryNChar(string, n):
     return [string[i:i+n] for i in range(0, len(string), n)]
 
