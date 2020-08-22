@@ -33,39 +33,45 @@ class Genes:
     #3
     @staticmethod
     def MakeFotosynthesis(organism):
-        # can produce from 0 to 10 energy each time
-        # energy production rate: 0 - 10 (0 - 9 is rate, A - F is 0)
+        # from light and humidity produces carbos
         fotGene = DecodeGene(organism.dna, 3)
         if fotGene == '_':
             return
-        lightAvailability = organism.currentBiomie.light
-        humAvailability = organism.currentBiomie.humidity
-        energyProductionRate = GetAvgFromHex(fotGene)
-        if energyProductionRate > 9:
-            energyProductionRate = 0
-        produced = energyProductionRate * min(lightAvailability, humAvailability)
-        organism.energy += mapVal(produced, 0, 1000, 0, 10)
+        prodPercentageGenes = 10
+        prodPercentageLight = 10
+        prodPercentageHum = 10
+        
+        lightAvailability = organism.currBiomie.light
+        humAvailability = organism.currBiomie.humidity
+        geneProductionRate = GetAvgFromHex(fotGene)
+        genesProd = mapVal(geneProductionRate, 0, 15, 0, prodPercentageGenes)
+        lightProd = mapVal(lightAvailability, 0, 100, 0, prodPercentageLight)
+        humProd = mapVal(humAvailability, 0, 100, 0, prodPercentageHum)
+        carbosProduced = genesProd * min(lightProd, humProd)
+        organism.carbohidrates += carbosProduced
+        organism.Limit()
 
     #4
     @staticmethod
     def DigestOrganicDebris(organism):
-        # rate 0 - 5
-        # A - F is 0 production
-        # 0 - 9 is rate floor(/ 2)
+        #similar to fotosynthesis only less efficient and produces energy directly
         debGene = DecodeGene(organism.dna, 4)
         if debGene == '_':
             return
-        totDebris = organism.currentBiomie.organicDebris
-        digestRate = GetAvgFromHex(debGene)
-        if digestRate > 9:
-            digestRate = 0
-        digestRate = math.floor(digestRate / 2)
+        prodPercentageGenes = 3
+        prodPercentageDebris = 1 # one debris represents x energy
+        
+        digestRate = mapVal(GetAvgFromHex(debGene), 0, 15, 0, prodPercentageGenes)
+        totDebris = organism.currOrganicDebris
+        takenDebris = 0
         if digestRate <= totDebris:
             organism.currentBiomie.organicDebris = totDebris - digestRate
-            organism.energy += digestRate # energy
+            takenDebris = digestRate # energy
         else:
             organism.currentBiomie.organicDebris = 0
-            organism.energy += totDebris # energy
+            takenDebris = totDebris # energy
+        organism.energy += takenDebris * prodPercentageDebris
+        organism.Limit()
 
     #5
     @staticmethod

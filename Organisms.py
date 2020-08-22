@@ -1,4 +1,4 @@
-from random import choice
+import random
 from Genes import Genes
 from DNA import DNA
 
@@ -18,12 +18,17 @@ class Organism:
     def __init__(self, pos, dna='random'):
         self.dna = Organism.GetDNA(dna)
 
+        self.female = True
+        if random.random() < 0.5:
+            self.female = False
+
         # internal - static
         self.colour = Genes.GetColour(self)
         self.foodChainPlace = Genes.GetFeedingType(self)
         self.IsAcuatic = Genes.GetIsAcuatic(self)
 
-        # internal - dynamic        
+        # internal - dynamic
+        self.age = 0
         self.health = 100
         self.protein = 10
         self.carbohidrates = 10
@@ -34,6 +39,7 @@ class Organism:
         self.currDirection = 0 # 0-up   1-right    2-down   3-left        
         self.visibleTiles = [self.position]
         self.dataInVision = []
+        self.currBiome
 
         # flags
         self.moveNext = False
@@ -46,18 +52,23 @@ class Organism:
     def SetPos(self, pos):
         self.position = pos
 
+    def SetBiome(self, biome):
+        self.currBiome = biome
+
+    def Limit(self):
+        if self.health > 100:
+            self.health = 100
+        if self.energy > 100:
+            self.energy = 100
+        if self.carbohidrates > 100:
+            self.carbohidrates = 100
+        if self.protein > 100:
+            self.protein = 100
+
     def Digest(self):
-        if self.foodChainPlace == 0:
-            Genes.MakeFotosynthesis(self)
-        elif self.foodChainPlace == 1:
-            Genes.DigestCarbos(self)
-        elif self.foodChainPlace == 2:
-            Genes.DigestProteines(self)
-        elif self.foodChainPlace == 3:
-            Genes.DigestOrganicDebris (self)
-        else:
-            print('foodChainPlace bad value')
-            assert False
+        Genes.DigestCarbos(self)
+        Genes.DigestProteines(self)
+        Genes.DigestOrganicDebris (self)
 
     def Heal(self):
         if self.health < 100:
@@ -85,7 +96,34 @@ class Organism:
                     self.dataInVision.append([(vision[0], vision[1]), data[vision[0]][vision[1]]])
                 
     def Move(self):
-        Genes.Movement(self)      
+        Genes.Movement(self)
+
+    def Eat(self):
+        if self.foodChainPlace == 0:
+            Genes.MaekFotosynthesis(self)
+        elif self.foodChainPlace == 1:
+            self.EatPlant()
+        elif self.foodChainPlace == 2:
+            self.EatHervibore()
+        elif self.foodChainPlace == 3:
+            
+
+    def EatPlant(self):
+        for loc in self.dataInVision:
+            if loc[0] == self.position and '0C' in loc[1]:
+                pass
+            # EAT PLANT
+
+    def EatHervibore(self):
+        for loc in self.dataInVision:
+            if loc[0] == self.position and '0D' in loc[1]:
+                pass
+            # EAT HERVIBORE
+        
+    def IsAlive(self):
+        if self.age > 100 or health <= 0:
+            return False
+        return True
 
 def SplitEveryNChar(string, n):
     return [string[i:i+n] for i in range(0, len(string), n)]
