@@ -1,6 +1,7 @@
 import random
 from Genes import Genes
 from DNA import DNA
+from Biome import Biome
 
 # Vision things ID system 2 hex digit long (for now)
 #   00 - 0A --> Biomes in order ['empty', 'grassland', 'forest', 'jungle', 'savanna', 
@@ -46,7 +47,7 @@ class Organism:
         self.currDirection = 0 # 0-up   1-right    2-down   3-left        
         self.visibleTiles = [self.position]
         self.dataInVision = []
-        self.currBiome
+        self.currBiome = Biome(0)
 
         # flags
         self.moveNext = False
@@ -105,13 +106,13 @@ class Organism:
 
     def Eat(self):
         if self.foodChainPlace == 0:
-            Genes.MaekFotosynthesis(self)
+            Genes.MakeFotosynthesis(self)
         elif self.foodChainPlace == 1:
             self.EatPlant()
         elif self.foodChainPlace == 2:
             self.EatHervibore()
         elif self.foodChainPlace == 3:
-            
+            Genes.DigestOrganicDebris(self)
 
     def EatPlant(self):
         radius = [self.position, (self.position[0], self.position[1] + 1), (self.position[0], self.position[1] - 1),

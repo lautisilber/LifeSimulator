@@ -41,8 +41,8 @@ class Genes:
         prodPercentageLight = 10
         prodPercentageHum = 10
         
-        lightAvailability = organism.currBiomie.light
-        humAvailability = organism.currBiomie.humidity
+        lightAvailability = organism.currBiome.light
+        humAvailability = organism.currBiome.humidity
         geneProductionRate = GetAvgFromHex(fotGene)
         genesProd = mapVal(geneProductionRate, 0, 15, 0, prodPercentageGenes)
         lightProd = mapVal(lightAvailability, 0, 100, 0, prodPercentageLight)

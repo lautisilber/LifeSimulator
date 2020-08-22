@@ -35,9 +35,9 @@ class Simulation:
         return (dy, dx)
 
     def draw_world(self):
-        for row in range(self.world.biomeMap.shape[0]):
-            for col in range(self.world.biomeMap.shape[1]):                
-                self.draw_quad(self.world.biomes[self.world.biomeMap[row][col]].colour, (row, col))
+        for row in range(self.world.size[0]):
+            for col in range(self.world.size[1]):                
+                self.draw_quad(self.world.biomes[row][col].colour, (row, col))
 
     def draw_organisms(self):
         for o in self.world.population:
