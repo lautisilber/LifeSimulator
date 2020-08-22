@@ -9,6 +9,13 @@ from DNA import DNA
 #   0C - 0F --> organisms of type ['plant', 'hervibore', 'carnivore', 'decomposer']
 #
 #   for now anything else represents no target
+# 
+# Metabolism cycle:
+#   See
+#   Eat
+#   Digest
+#   Move
+#   Check life parameters
 
 class Organism:
     @staticmethod
@@ -74,13 +81,8 @@ class Organism:
         if self.health < 100:
             Genes.Heal(self)
 
-    def See(self):
+    def See(self, data):
         Genes.Vision(self)
-
-    def AdjustVisibleTiles(self, newVisibleTiles):
-        self.visibleTiles = newVisibleTiles
-
-    def SetVisionData(self, data):
         self.dataInVision = []
         for p in self.visibleTiles:
             vision = p # (p[0] + self.position[0], p[1] + self.position[1])
@@ -94,6 +96,9 @@ class Organism:
                     self.dataInVision.append([(vision[0], vision[1]), string])
                 else:
                     self.dataInVision.append([(vision[0], vision[1]), data[vision[0]][vision[1]]])
+
+    def AdjustVisibleTiles(self, newVisibleTiles):
+        self.visibleTiles = newVisibleTiles
                 
     def Move(self):
         Genes.Movement(self)
@@ -109,16 +114,26 @@ class Organism:
             
 
     def EatPlant(self):
+        radius = [self.position, (self.position[0], self.position[1] + 1), (self.position[0], self.position[1] - 1),
+        (self.position[0] + 1, self.position[1]), (self.position[0] - 1, self.position[1]), (self.position[0] + 1, self.position[1] + 1),
+        (self.position[0] + 1, self.position[1] - 1), (self.position[0] - 1, self.position[1] + 1), (self.position[0] - 1, self.position[1] - 1)]
         for loc in self.dataInVision:
-            if loc[0] == self.position and '0C' in loc[1]:
-                pass
-            # EAT PLANT
+            if loc[0] in radius and '0C' in loc[1]:
+                return [loc[0], '0C']
+            else:
+                return []
+            # EAT PLANT - return to environment eaten organism diet type and location to environment
 
     def EatHervibore(self):
+        radius = [self.position, (self.position[0], self.position[1] + 1), (self.position[0], self.position[1] - 1),
+        (self.position[0] + 1, self.position[1]), (self.position[0] - 1, self.position[1]), (self.position[0] + 1, self.position[1] + 1),
+        (self.position[0] + 1, self.position[1] - 1), (self.position[0] - 1, self.position[1] + 1), (self.position[0] - 1, self.position[1] - 1)]
         for loc in self.dataInVision:
-            if loc[0] == self.position and '0D' in loc[1]:
-                pass
-            # EAT HERVIBORE
+            if loc[0] in radius and '0D' in loc[1]:
+                return [loc[0], '0D']
+            else:
+                return []
+            # EAT HERVIBORE - same as EatPlant()
         
     def IsAlive(self):
         if self.age > 100 or health <= 0:

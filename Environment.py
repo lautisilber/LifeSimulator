@@ -91,8 +91,11 @@ class World:
 
     def UpdatePopulationVision(self):
         for p in self.population:
-            p.See()
-            p.SetVisionData(self.visionMap)
+            p.See(self.visionMap)
+
+    def PopulationEat(self):
+        for p in self.population:
+            p.Eat()
 
     def Move(self):
         for p in self.population:
@@ -115,6 +118,7 @@ class World:
     def Loop(self):
         self.WriteVisionMap()
         self.UpdatePopulationVision()
+        self.PopulationEat()
         self.Move()
 
 class Biome:
