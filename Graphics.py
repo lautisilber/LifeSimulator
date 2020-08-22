@@ -37,18 +37,20 @@ class Simulation:
     def draw_world(self):
         for row in range(self.world.biomeMap.shape[0]):
             for col in range(self.world.biomeMap.shape[1]):                
-                self.draw_rect((col * self.gridSize[1], row * self.gridSize[0]), (self.gridSize[1], self.gridSize[0]), self.world.biomes[self.world.biomeMap[row][col]].colour)
+                self.draw_quad(self.world.biomes[self.world.biomeMap[row][col]].colour, (row, col))
 
     def draw_organisms(self):
         for o in self.world.population:
-            #self.draw_rect((o.position[1] * self.gridSize[1] + self.organismScale[1], o.position[0] * self.gridSize[0] + self.organismScale[0]),
-            #((o.position[1] + 1) * self.gridSize[1] - self.organismScale[1], (o.position[0] + 1) * self.gridSize[0] - self.organismScale[0]),
-            #o.colour)
-            #self.draw_rect((o.position[1] * self.gridSize[1], o.position[0] * self.gridSize[0]),
-            #((o.position[1] + 1) * self.gridSize[1], (o.position[0] + 1) * self.gridSize[0]),
-            #o.colour)
-            self.draw_rect((o.position[1] * self.gridSize[1], o.position[0] * self.gridSize[0]), (15, 15), o.colour)
+            self.draw_quad((255, 0, 255), o.position, 0.75)
 
+    def draw_quad(self, col, coords, scale=1):
+        if scale == 1:
+            upleft = (coords[1] * self.gridSize[0], coords[0] * self.gridSize[1])
+            self.draw_rect(upleft, self.gridSize, col)
+        else:
+            upleft = (coords[1] * self.gridSize[0], coords[0] * self.gridSize[1])
+            offset = (1 - scale) * 0.5
+            self.draw_rect((round(upleft[0] + offset * self.gridSize[0]), round(upleft[1] + offset * self.gridSize[1])), (round(self.gridSize[0] * scale), round(self.gridSize[1] * scale)), col)
 
     def draw_rect(self, upleft, bottomright, col):
         pygame.draw.rect(self.screen, col, (upleft[0], upleft[1], bottomright[0], bottomright[1]))
