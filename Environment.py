@@ -1,10 +1,10 @@
 import numpy as np
+from Genes import Genes
 from random import choice
 from Organisms import Organism
 from Biome import Biome
 
 class World:
-
     #biomeNames = ['empty', 'grassland', 'forest', 'jungle', 'savanna', 'desert', 'wetland', 'tundra', 'artic', 'reef', 'marine', 'ocean']
     
     def __init__(self, size):
@@ -14,6 +14,8 @@ class World:
         self.populationMap = list()
         self.population = list()
         self.visionMap = list()
+        
+        Genes.size = self.size
 
         #self.CreateWorld()
 

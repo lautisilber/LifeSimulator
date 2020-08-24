@@ -1,6 +1,5 @@
 import math
 import random
-# Shape of a gene
 # numberOfGene:dataRequiredToExpressGene-numberOfSecondGene:DataToExpressSecondGene
 # for example:
 # 0:FFFFFF-1:A
@@ -8,6 +7,8 @@ import random
 # and a fotosynthetic gene with a production rate of 10
 
 class Genes:
+    size = (1000, 1000)
+
 # INTERNAL ACTIONS
     #0
     @staticmethod
@@ -128,9 +129,13 @@ class Genes:
         if visGene == '_':
             return
         visionType = round(mapVal(GetAvgFromHex(visGene), 0, 15, 0, 3))
-        organism.visibleTiles = GetVisibleCoords(organism.position, visionType, organism.currDirection)
+        tiles = GetVisibleCoords(organism.position, visionType, organism.currDirection)
+        organism.visibleTiles = []
+        for t in tiles:
+            if t[0] >= 0 and t[0] < Genes.size[0] and t[1] >= 0 and t[1] < Genes.size[1]:
+                organism.visibleTiles.append(t)
 
-    #9 and 10
+    #9, 10, 11
     @staticmethod
     def Movement(organism, forceRandom=False):
         # data is distributed in the following way:
@@ -184,10 +189,6 @@ class Genes:
 
         if not organism.moveNext:
             organism.currDirection = random.choice([0, 1, 2, 3])
-            
-        @staticmethod
-        def Eat(organism, otherHealth):
-            pass
 
 # helper functions
 def GetTarget(targets, dataInVision):

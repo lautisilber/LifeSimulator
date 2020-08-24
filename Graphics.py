@@ -41,7 +41,7 @@ class Simulation:
 
     def draw_organisms(self):
         for o in self.world.population:
-            self.draw_quad((255, 0, 255), o.position, 0.75)
+            self.draw_quad(o.colour, o.position, 0.75)
 
     def draw_quad(self, col, coords, scale=1):
         if scale == 1:
@@ -80,19 +80,33 @@ def main():
     world = Environment.World((40, 60))
     world.CreateWorld()
 
-    dna = 'FF00FF'
-    dna += '00000000'
-    dna += '00000000'
-    dna += '00000000'
-    dna += '00000000'
-    dna += '00000000'
-    dna += '00000000'
-    dna += '00000000'
-    dna += '99999999'
-    dna += 'EEEEEEEE'
-    dna += 'FFFFFFFF'
-    dna += '0404FFFF' + '05050000'
-    world.AddPopulation(dna)
+    dna1 = 'FF00FF'
+    dna1 += '00000000'
+    dna1 += '99999999'
+    dna1 += '00000000'
+    dna1 += '00000000'
+    dna1 += '00000000'
+    dna1 += '00000000'
+    dna1 += '00000000'
+    dna1 += '55555555'
+    dna1 += 'EEEEEEEE'
+    dna1 += 'FFFFFFFF'
+    dna1 += '0D0DFFFF' + '05050000'
+    world.AddPopulation(dna1)
+
+    dna2 = 'FF0000'
+    dna2 += '00000000'
+    dna2 += '55555555'
+    dna2 += '00000000'
+    dna2 += '00000000'
+    dna2 += '00000000'
+    dna2 += '00000000'
+    dna2 += '00000000'
+    dna2 += '99999999'
+    dna2 += 'EEEEEEEE'
+    dna2 += 'FFFFFFFF'
+    dna2 += '0E0E0000' + '05050000'
+    world.AddPopulation(dna2)
 
     sim = Simulation((900, 600), 60, 1, world)
     sim.loop()

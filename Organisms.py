@@ -137,7 +137,7 @@ class Organism:
             # EAT HERVIBORE - same as EatPlant()
         
     def IsAlive(self):
-        if self.age > 100 or health <= 0:
+        if self.age > 100 or self.health <= 0:
             return False
         return True
 
