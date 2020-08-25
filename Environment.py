@@ -100,11 +100,17 @@ class World:
         for p in self.population:
             p.Eat()
 
+    def PopulationCheck(self):
+        for p in self.population:
+            p.SelfCheck()
+            print(p.energy)
+
     def Move(self):
         for p in self.population:
             p.Move()
             print(p.moveNext)
-            if p.moveNext:
+            if p.moveNext and p.energy > Organism.minMoveEnergy:
+                lastPos = p.position
                 if p.currDirection == 0 and p.position[0] + 1 < self.size[0]:
                     p.position = (p.position[0] + 1, p.position[1])
                 elif p.currDirection == 1 and p.position[1] + 1 < self.size[1]:
@@ -115,15 +121,19 @@ class World:
                     p.position = (p.position[0], p.position[1] - 1)
                 else:
                     p.currDirection = choice([0, 1, 2, 3])
-                p.SetBiome(self.biomes[p.position[0]][p.position[1]])
-                p.moveNext = False                      
-            print(p.position)
+
+                if lastPos != p.position:
+                    p.energy -= Organism.moveCost
+                p.SetBiome(self.biomes[p.position[0]][p.position[1]])                
+                p.moveNext = False                    
+            print(p.position)            
                 
     def Loop(self):
         self.WriteVisionMap()
         self.UpdatePopulationVision()
         self.PopulationEat()
         self.Move()
+        self.PopulationCheck()
 
 # helper functions
 def DecTo2DigitHex(dec):

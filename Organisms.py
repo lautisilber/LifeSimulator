@@ -22,6 +22,13 @@ class Organism:
     @staticmethod
     def GetDNA(flag):
         return DNA.GetDNAFromFlag(flag)
+
+    # natural energy decay
+    energyDecay = 10 # 1 energy loss every x cycles
+
+    # global movement variables
+    moveCost = 1
+    minMoveEnergy = 10
     
     def __init__(self, pos, dna='random'):
         self.dna = Organism.GetDNA(dna)
@@ -40,7 +47,7 @@ class Organism:
         self.health = 100
         self.protein = 10
         self.carbohidrates = 10
-        self.energy = 10
+        self.energy = 100
 
         # external - dynamic
         self.position = pos
@@ -53,6 +60,7 @@ class Organism:
         self.moveNext = False
         self.targetedMove = False
         self.moveTargets = []
+        self.decayClock = 0
 
     def SetDNA(self, flag):
         self.dna = Organism.GetDNA(flag)
@@ -135,9 +143,15 @@ class Organism:
             else:
                 return []
             # EAT HERVIBORE - same as EatPlant()
+
+    def SelfCheck(self):
+        self.decayClock += 1
+        if self.decayClock >= Organism.energyDecay:
+            self.energy -= 1
+            self.decayClock = 0
         
     def IsAlive(self):
-        if self.age > 100 or self.health <= 0:
+        if self.age > 100 or self.health <= 0 or self.energy <= 0:
             return False
         return True
 

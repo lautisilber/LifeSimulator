@@ -74,10 +74,10 @@ class Simulation:
             pygame.display.update()
         pygame.quit()
 
-def main():
+def main(fps):
     import numpy as np
 
-    world = Environment.World((40, 60))
+    world = Environment.World((20, 30))
     world.CreateWorld()
 
     dna1 = 'FF00FF'
@@ -108,8 +108,25 @@ def main():
     dna2 += '0E0E0000' + '05050000'
     world.AddPopulation(dna2)
 
-    sim = Simulation((900, 600), 60, 1, world)
+    sim = Simulation((900, 600), fps, 1, world)
     sim.loop()
 
+def get_int_input(prompt):
+    data = 0
+    end = False
+    while True:
+        i = input(prompt)
+        try:
+            if float(str(i)).is_integer():
+                data = int(float(str(i)))
+                end = True
+            else:
+                print('please type in an integer')
+        except:
+            print('not a valid input!')
+        if end:
+            break
+    return data
+
 if __name__ == "__main__":
-    main()
+    main(get_int_input('fps: '))

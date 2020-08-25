@@ -110,7 +110,8 @@ class Genes:
         heaGene = DecodeGene(organism.dna, 7)
         if heaGene == '_':
             return
-        healRate = GetAvgFromHex(heaGene)
+        maxHealRate = 3
+        healRate = mapVal(GetAvgFromHex(heaGene), 0, 15, 0, maxHealRate)
         if organism.energy >= healRate:
             organism.health += healRate
             organism.energy -= healRate
@@ -225,21 +226,51 @@ def DirectionFinding(origin, target, follow=True):
             print('error direction finding (helper function in genes.py')
     else:
         if dy == 0 and dx == 0:
-            return -1
+            if follow:
+                return -1
+            else:
+                return random.choice(GetValidDirections(origin))
+
         if random.random() < 0.5:
             if (dy > 0 and follow) or (dy < 0 and not follow):
                 return 0
             elif (dy < 0 and follow) or (dy > 0 and not follow):
                 return 2
             else:
-                print('error direction finding (helper function in genes.py')                                
+                print('error direction finding helper function in genes.py')                                
         else:
             if (dx > 0 and follow) or (dx < 0 and not follow):
                 return 1
             elif (dx < 0 and follow) or (dx > 0 and not follow):
                 return 3
             else:
-                print('error direction finding (helper function in genes.py')
+                print('error direction finding helper function in genes.py')
+
+def GetValidDirections(pos):
+    validDirections = list()
+    for d in [0, 1, 2, 3]:
+        if IsDirectionValid(pos, d):
+            validDirections.append(d)
+    return validDirections
+
+def IsDirectionValid(pos, direction):
+    newPos = pos
+    if direction == 0:
+        newPos = (newPos[0] + 1, newPos[1])
+    elif direction == 1:
+        newPos = (newPos[0], newPos[1] + 1)
+    elif direction == 2:
+        newPos = (newPos[0] - 1, newPos[1])
+    elif direction == 3:
+        newPos = (newPos[0], newPos[1] - 1)
+    else:
+        print("Bad direction value at Genes.IsDirectionValid()")
+        assert False
+
+    if newPos[0] >= 0 and newPos[0] < Genes.size[0] and newPos[1] >= 0 and newPos[1] < Genes.size[1]:
+        return True
+    else:
+        return False
 
 # maps value with range of iMin - iMax to a range of oMin - oMax
 def mapVal(val, iMin, iMax, oMin, oMax):
@@ -272,9 +303,9 @@ def GetVisibleCoords(origin, visionType, direction):
     #               O
     #   1
     #                     .
-    #                   . .
-    #               O . . .
-    #                   . .
+    #               .   . .
+    #             . O . . .
+    #               .   . .
     #                     .
     #   2
     #               .
@@ -285,7 +316,7 @@ def GetVisibleCoords(origin, visionType, direction):
     #   3
     #               . .
     #               . . .
-    #               O . .
+    #             . O . .
     #               . . .
     #               . .
     #
@@ -306,11 +337,11 @@ def GetVisibleCoords(origin, visionType, direction):
     if visionType == 1:
         vision = [
             (0, 0),
-            (1, 0), (2, 0), (3, 0),
-            (2, 1), (3, 1),
-            (2, -1), (3, -1),
+            (-1, 0), (1, 0), (2, 0), (3, 0),
+            (0, 1), (2, 1), (3, 1),
+            (0, -1), (2, -1), (3, -1),
             (3, 2),
-            (3, -2)
+            (3, -2),            
         ]
     elif visionType == 2:
         vision = [
@@ -324,7 +355,7 @@ def GetVisibleCoords(origin, visionType, direction):
     elif visionType == 3:
         vision = [
             (0, 0),
-            (1, 0), (2, 0),
+            (-1, 0), (1, 0), (2, 0),
             (0, 1), (1, 1), (2, 1),
             (0, -1), (1, -1), (2, -1),
             (0, 2),  (1, 2),
