@@ -19,19 +19,16 @@ from Biome import Biome
 #   Check life parameters
 
 class Organism:
-    @staticmethod
-    def GetDNA(flag):
-        return DNA.GetDNAFromFlag(flag)
-
     # natural energy decay
     energyDecay = 10 # 1 energy loss every x cycles
 
     # global movement variables
     moveCost = 1
     minMoveEnergy = 10
+    foreignBiomeEnergyPenalty = 2
     
     def __init__(self, pos, dna='random'):
-        self.dna = Organism.GetDNA(dna)
+        self.dna = DNA.GetDNAFromFlag(dna)
 
         self.female = True
         if random.random() < 0.5:
@@ -40,7 +37,7 @@ class Organism:
         # internal - static
         self.colour = Genes.GetColour(self)
         self.foodChainPlace = Genes.GetFeedingType(self)
-        self.IsAcuatic = Genes.GetIsAcuatic(self)
+        self.isAcuatic = Genes.GetisAcuatic(self)
 
         # internal - dynamic
         self.age = 0
@@ -48,6 +45,7 @@ class Organism:
         self.protein = 10
         self.carbohidrates = 10
         self.energy = 100
+        self.alive = True
 
         # external - dynamic
         self.position = pos
@@ -63,7 +61,7 @@ class Organism:
         self.decayClock = 0
 
     def SetDNA(self, flag):
-        self.dna = Organism.GetDNA(flag)
+        self.dna = DNA.GetDNAFromFlag(flag)
 
     def SetPos(self, pos):
         self.position = pos
@@ -149,6 +147,11 @@ class Organism:
         if self.decayClock >= Organism.energyDecay:
             self.energy -= 1
             self.decayClock = 0
+        if self.energy <= 0:
+            self.alive = False
+        if (self.isAcuatic and self.currBiome.humidity != 100) or (not self.isAcuatic and self.currBiome.humidity == 100):
+            self.energy -= Organism.foreignBiomeEnergyPenalty
+        self.Limit()
         
     def IsAlive(self):
         if self.age > 100 or self.health <= 0 or self.energy <= 0:

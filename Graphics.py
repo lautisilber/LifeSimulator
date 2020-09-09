@@ -75,38 +75,39 @@ class Simulation:
         pygame.quit()
 
 def main(fps):
-    import numpy as np
 
     world = Environment.World((20, 30))
     world.CreateWorld()
 
-    dna1 = 'FF00FF'
-    dna1 += '00000000'
-    dna1 += '99999999'
-    dna1 += '00000000'
-    dna1 += '00000000'
-    dna1 += '00000000'
-    dna1 += '00000000'
-    dna1 += '00000000'
-    dna1 += '55555555'
-    dna1 += 'EEEEEEEE'
-    dna1 += 'FFFFFFFF'
-    dna1 += '0D0DFFFF' + '05050000'
-    world.AddPopulation(dna1)
+    # dna1 = 'FF00FF'
+    # dna1 += '00000000'
+    # dna1 += '99999999'
+    # dna1 += '00000000'
+    # dna1 += '00000000'
+    # dna1 += '00000000'
+    # dna1 += '00000000'
+    # dna1 += '00000000'
+    # dna1 += '55555555'
+    # dna1 += 'EEEEEEEE'
+    # dna1 += 'FFFFFFFF'
+    # dna1 += '0D0DFFFF' + '05050000'
+    # world.AddPopulation(dna1)
 
-    dna2 = 'FF0000'
-    dna2 += '00000000'
-    dna2 += '55555555'
-    dna2 += '00000000'
-    dna2 += '00000000'
-    dna2 += '00000000'
-    dna2 += '00000000'
-    dna2 += '00000000'
-    dna2 += '99999999'
-    dna2 += 'EEEEEEEE'
-    dna2 += 'FFFFFFFF'
-    dna2 += '0E0E0000' + '05050000'
-    world.AddPopulation(dna2)
+    # dna2 = 'FF0000'
+    # dna2 += '00000000'
+    # dna2 += '55555555'
+    # dna2 += '00000000'
+    # dna2 += '00000000'
+    # dna2 += '00000000'
+    # dna2 += '00000000'
+    # dna2 += '00000000'
+    # dna2 += '99999999'
+    # dna2 += 'EEEEEEEE'
+    # dna2 += 'FFFFFFFF'
+    # dna2 += '0E0E0000' + '05050000'
+    # world.AddPopulation(dna2)
+
+    world.SpawnRandom(10)
 
     sim = Simulation((900, 600), fps, 1, world)
     sim.loop()

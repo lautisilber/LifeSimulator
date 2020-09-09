@@ -10,9 +10,11 @@ class World:
     def __init__(self, size):
         assert len(size) == 2
         self.size = size
-        self.biomes = list()        
-        self.populationMap = list()
+        self.biomes = list()
+
         self.population = list()
+
+        self.populationMap = list()
         self.visionMap = list()
         
         Genes.size = self.size
@@ -64,14 +66,17 @@ class World:
                 self.populationMap[r].append([])            
                 self.visionMap[r].append('')
 
-    def AddPopulation(self, dnaInit='random', randPos=True, pos=(0, 0)):
-        position = pos
-        if randPos:
+    def SpawnRandom(self, amount=1):
+        for _ in range(amount):
+            self.AddPopulation()
+
+    def AddPopulation(self, dnaInit='random', pos=(-1, -1)):
+        if pos == (-1, -1):
             from random import randint
-            position = (randint(0, self.size[0] - 1), randint(0, self.size[1] - 1))                    
-        self.population.append(Organism(position, dnaInit))
-        self.population[len(self.population) - 1].SetBiome(self.biomes[position[0]][position[1]])
-        print(position)
+            pos = (randint(0, self.size[0] - 1), randint(0, self.size[1] - 1))                    
+        self.population.append(Organism(pos, dnaInit))
+        self.population[len(self.population) - 1].SetBiome(self.biomes[pos[0]][pos[1]])
+        print(pos)
 
     def WritePopulationMap(self):
         for r in range(self.size[0]):
@@ -101,9 +106,24 @@ class World:
             p.Eat()
 
     def PopulationCheck(self):
+        deadOrganisms = []
+        i = 0
         for p in self.population:
             p.SelfCheck()
-            print(p.energy)
+            if not p.alive:
+                pos = p.position
+                self.biomes[pos[0]][pos[1]].organicDebris += p.carbohidrates + p.protein * 2
+                deadOrganisms.append(i)
+            i += 1
+        deadOrganisms.reverse()
+        for index in deadOrganisms:
+            del self.population[index]
+                
+
+    def UpdateOrganismBiomes(self):
+        for p in self.population:
+            pos = p.position
+            p.SetBiome(self.biomes[pos[0]][pos[1]])
 
     def Move(self):
         for p in self.population:
@@ -133,6 +153,7 @@ class World:
         self.UpdatePopulationVision()
         self.PopulationEat()
         self.Move()
+        self.UpdateOrganismBiomes()
         self.PopulationCheck()
 
 # helper functions

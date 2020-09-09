@@ -8,6 +8,7 @@ class Biome:
         self.light = Biome.GetLightFromName(self.name)
         self.temperature = Biome.GetTempFromName(self.name)
         self.humidity = Biome.GetHumFromName(self.name)
+
         self.organicDebris = 0
 
     @staticmethod

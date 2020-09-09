@@ -9,6 +9,24 @@ import random
 class Genes:
     size = (1000, 1000)
 
+    # Fotosnthesis
+    f_maxProdPercentage_genes = 10
+    f_maxProdPercentage_light = 10
+    f_maxProdPercentage_humidity = 10
+
+    # Organic Debri Digestion
+    o_maxProdPercentage_genes = 3
+    o_debrisEnergStored = 1
+
+    # Carbos Digestion
+    c_carbosEnergyStored = 2
+
+    # Protein Digestion
+    p_proteinEnergyStored = 6
+
+    # Heal
+    h_maxHealRate_genes = 3
+
 # INTERNAL ACTIONS
     #0
     @staticmethod
@@ -18,7 +36,7 @@ class Genes:
 
     #1
     @staticmethod
-    def GetIsAcuatic(organism):
+    def GetisAcuatic(organism):
         acuGene = DecodeGene(organism.dna, 1)
         return GetBoolFromHex(acuGene)
 
@@ -29,7 +47,7 @@ class Genes:
         # 0 is Plant, 1 is Hervibore, 2 is Carnivore, 3 is Decomposer        
         aliGene = DecodeGene(organism.dna, 2)
         val = GetAvgFromHex(aliGene)
-        return round(mapVal(val, 0, 15, 0, 4))
+        return round(MapSimple(val, 4))
 
     #3
     @staticmethod
@@ -38,16 +56,13 @@ class Genes:
         fotGene = DecodeGene(organism.dna, 3)
         if fotGene == '_':
             return
-        prodPercentageGenes = 10
-        prodPercentageLight = 10
-        prodPercentageHum = 10
-        
+
         lightAvailability = organism.currBiome.light
         humAvailability = organism.currBiome.humidity
         geneProductionRate = GetAvgFromHex(fotGene)
-        genesProd = mapVal(geneProductionRate, 0, 15, 0, prodPercentageGenes)
-        lightProd = mapVal(lightAvailability, 0, 100, 0, prodPercentageLight)
-        humProd = mapVal(humAvailability, 0, 100, 0, prodPercentageHum)
+        genesProd = MapSimple(geneProductionRate, Genes.f_maxProdPercentage_genes)
+        lightProd = MapSimple(lightAvailability, Genes.f_maxProdPercentage_light, 100)
+        humProd = MapSimple(humAvailability, Genes.f_maxProdPercentage_humidity, 100)
         carbosProduced = genesProd * min(lightProd, humProd)
         organism.carbohidrates += carbosProduced
         organism.Limit()
@@ -59,19 +74,17 @@ class Genes:
         debGene = DecodeGene(organism.dna, 4)
         if debGene == '_':
             return
-        prodPercentageGenes = 3
-        prodPercentageDebris = 1 # one debris represents x energy
-        
-        digestRate = mapVal(GetAvgFromHex(debGene), 0, 15, 0, prodPercentageGenes)
-        totDebris = organism.currOrganicDebris
+
+        digestRate = MapSimple(GetAvgFromHex(debGene), Genes.o_maxProdPercentage_genes)
+        totDebris = organism.currBiome.organicDebris
         takenDebris = 0
         if digestRate <= totDebris:
-            organism.currentBiomie.organicDebris = totDebris - digestRate
+            organism.currBiome.organicDebris = totDebris - digestRate
             takenDebris = digestRate # energy
         else:
-            organism.currentBiomie.organicDebris = 0
+            organism.currBiome.organicDebris = 0
             takenDebris = totDebris # energy
-        organism.energy += takenDebris * prodPercentageDebris
+        organism.energy += takenDebris * Genes.o_debrisEnergStored
         organism.Limit()
 
     #5
@@ -83,9 +96,9 @@ class Genes:
         carGene = DecodeGene(organism.dna, 5)
         if carGene == '_':
             return
-        conversionRate = 2
+
         carbosEmployed = organism.carbohidrates * (GetAvgFromHex(carGene) / 100)
-        organism.energy += carbosEmployed * conversionRate
+        organism.energy += carbosEmployed * Genes.c_carbosEnergyStored
         organism.carbohidrates -= carbosEmployed
 
     #6
@@ -97,9 +110,9 @@ class Genes:
         proGene = DecodeGene(organism.dna, 6)
         if proGene == '_':
             return
-        conversionRate = 6
+
         protsEmployed = organism.protein * (GetAvgFromHex(proGene) / 100)
-        organism.energy += protsEmployed * conversionRate
+        organism.energy += protsEmployed * Genes.p_proteinEnergyStored
         organism.protein -= protsEmployed
 
     #7
@@ -110,8 +123,8 @@ class Genes:
         heaGene = DecodeGene(organism.dna, 7)
         if heaGene == '_':
             return
-        maxHealRate = 3
-        healRate = mapVal(GetAvgFromHex(heaGene), 0, 15, 0, maxHealRate)
+
+        healRate = MapSimple(GetAvgFromHex(heaGene), Genes.h_maxHealRate_genes)
         if organism.energy >= healRate:
             organism.health += healRate
             organism.energy -= healRate
@@ -129,7 +142,7 @@ class Genes:
         visGene = DecodeGene(organism.dna, 8)
         if visGene == '_':
             return
-        visionType = round(mapVal(GetAvgFromHex(visGene), 0, 15, 0, 3))
+        visionType = round(MapSimple(GetAvgFromHex(visGene), 3))
         tiles = GetVisibleCoords(organism.position, visionType, organism.currDirection)
         organism.visibleTiles = []
         for t in tiles:
@@ -163,7 +176,7 @@ class Genes:
         elif motive <= 10: # random movement
             organism.currDirection = random.randint(0, 3)
             organism.targetedMove = False
-            if random.random() < mapVal(GetAvgFromHex(chaGene), 0, 15, 0, 1):
+            if random.random() < MapSimple(GetAvgFromHex(chaGene), 1):
                 organism.moveNext = True
             else:
                 organism.moveNext = False
@@ -188,7 +201,9 @@ class Genes:
             else:
                 Genes.Movement(organism, True)
 
-        if not organism.moveNext:
+        if organism.moveNext:
+            organism.energy -= organism.moveCost
+        else:
             organism.currDirection = random.choice([0, 1, 2, 3])
 
 # helper functions
@@ -273,8 +288,11 @@ def IsDirectionValid(pos, direction):
         return False
 
 # maps value with range of iMin - iMax to a range of oMin - oMax
-def mapVal(val, iMin, iMax, oMin, oMax):
+def MapVal(val, iMin, iMax, oMin, oMax):
     return oMin + ((float(val - iMin) / float(iMax - iMin)) * (oMax - oMin))
+
+def MapSimple(val, oMax, iMax=15):
+    return MapVal(val, 0, iMax, 0, oMax)
 
 def HexToRGB(hexCode):
     assert isinstance(hexCode, str)
@@ -382,7 +400,7 @@ def GetAvgFromHex(hexString, digitLength=1):
     return round(avg)
 
 def GetBoolFromHex(hexCode):
-    val = round(mapVal(GetAvgFromHex(hexCode), 0, 15, 0, 1))
+    val = round(MapSimple(GetAvgFromHex(hexCode), 1))
     if val == 1:
         return True
     elif val == 0:
