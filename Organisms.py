@@ -19,6 +19,7 @@ from Biome import Biome
 #   Check life parameters
 
 class Organism:
+
     # natural energy decay
     energyDecay = 10 # 1 energy loss every x cycles
 
@@ -27,6 +28,12 @@ class Organism:
     minMoveEnergy = 10
     foreignBiomeEnergyPenalty = 2
     
+    # global mating rules
+    matingCooldown = 10
+
+    # organism IDs
+    organismIDs = ['0C', '0D', '0E', '0F']
+
     def __init__(self, pos, dna='random'):
         self.dna = DNA.GetDNAFromFlag(dna)
 
@@ -34,10 +41,14 @@ class Organism:
         if random.random() < 0.5:
             self.female = False
 
+        # global info
+        self.moveCost = Organism.moveCost
+
         # internal - static
         self.colour = Genes.GetColour(self)
         self.foodChainPlace = Genes.GetFeedingType(self)
         self.isAcuatic = Genes.GetisAcuatic(self)
+        self.isFemale = random.choice([True, False])
 
         # internal - dynamic
         self.age = 0
@@ -46,6 +57,7 @@ class Organism:
         self.carbohidrates = 10
         self.energy = 100
         self.alive = True
+        self.matingCooldown = 0
 
         # external - dynamic
         self.position = pos

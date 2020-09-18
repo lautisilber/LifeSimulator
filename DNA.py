@@ -1,4 +1,5 @@
 import random
+import difflib.SequenceMatcher
 
 class DNA:
     # colour, acutism, feeding type, fotosynthesis, organic debris, carbos,
@@ -72,6 +73,10 @@ class DNA:
             for _ in range(g):
                 s += random.choice(DNA.bases)
         return DNA.GetDNAStringFromRaw(s)
+
+    @staticmethod
+    def DNAStringSimilarity(string1, string2):
+        return SequenceMatcher(None, string1, string2).ratio()
 
     @staticmethod
     def GetCustomString(genes):

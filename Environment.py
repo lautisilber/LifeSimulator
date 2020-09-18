@@ -76,7 +76,6 @@ class World:
             pos = (randint(0, self.size[0] - 1), randint(0, self.size[1] - 1))                    
         self.population.append(Organism(pos, dnaInit))
         self.population[len(self.population) - 1].SetBiome(self.biomes[pos[0]][pos[1]])
-        print(pos)
 
     def WritePopulationMap(self):
         for r in range(self.size[0]):
@@ -124,11 +123,11 @@ class World:
         for p in self.population:
             pos = p.position
             p.SetBiome(self.biomes[pos[0]][pos[1]])
+            print(p.dataInVision)
 
     def Move(self):
         for p in self.population:
             p.Move()
-            print(p.moveNext)
             if p.moveNext and p.energy > Organism.minMoveEnergy:
                 lastPos = p.position
                 if p.currDirection == 0 and p.position[0] + 1 < self.size[0]:
@@ -145,9 +144,17 @@ class World:
                 if lastPos != p.position:
                     p.energy -= Organism.moveCost
                 p.SetBiome(self.biomes[p.position[0]][p.position[1]])                
-                p.moveNext = False                    
-            print(p.position)            
+                p.moveNext = False   
                 
+    def PopulationMating():
+        # can be improved
+        for p1 in self.population:
+            if (p1.foodChainPlace == 1 or p1.foodChainPlace == 2) and p1.isFemale:
+                pos = p1.position
+                for p2 in self.population:
+                    if p1 != p2 and (p2.foodChainPlace == 1 or p2.foodChainPlace == 2) and not p2.isFemale:
+                        # MATE!!!!!! Fucking MATE!!!
+
     def Loop(self):
         self.WriteVisionMap()
         self.UpdatePopulationVision()

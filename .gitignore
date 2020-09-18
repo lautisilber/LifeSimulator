@@ -3,6 +3,9 @@
 launch.json
 settings.json
 
+# vim
+*.swp
+
 #tests
 #test*.py
 
